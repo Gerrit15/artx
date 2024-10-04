@@ -43,6 +43,23 @@ impl Board {
     }
 }
 
+impl fmt::Display for Board {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut out = "".to_owned();
+        for i in &self.board {
+            let mut s = "|".to_owned();
+            for j in i {
+                match j {
+                    Cell::DEAD => s += " [ ] |",
+                    Cell::ALIVE => s += " [X] |",
+                }
+            }
+            out += &(s + "\n");
+        }
+        write!(f, "{out}")
+    }
+}
+
 #[derive(Clone, PartialEq)]
 enum Cell {
     ALIVE,
