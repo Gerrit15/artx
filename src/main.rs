@@ -1,5 +1,47 @@
 fn main() {
-    println!("Hello, world!");
+    let mut b = Board::new(4, 4);
+    b.board = b.update();
+}
+
+struct Board {
+    pub width: usize,
+    pub height: usize,
+    pub board: Vec<Vec<Cell>>
+}
+
+impl Board {
+    pub fn new(w: usize, h: usize) -> Board {
+        Board {
+            width: w,
+            height: h,
+            board: vec![vec![Cell::DEAD; h];w]
+        }
+    }
+
+    pub fn update(&self) -> Vec<Vec<Cell>> {
+        let mut new_board = vec![vec![Cell::DEAD; self.height]; self.width];
+        for i in 0..self.width {
+            for j in 0..self.height {
+                let mut kernel: Vec<Option<&Cell>> = vec![];
+                for u in (i - 1) .. (i + 1) {
+                    for v in (i - 1) .. (i + 1) {
+                        if u != v {kernel.push(self.get(i, j))}
+                    }
+                } 
+                new_board[i][j] = self.board[i][j].tick(kernel);
+            }
+        }
+        new_board
+    }
+
+    fn get(&self, w: usize, h: usize) -> Option<&Cell> {
+        let c = self.board.get(w);
+        match c {
+            Some(c) => return c.get(h),
+            None => return None
+        }
+    }
+}
 
 #[derive(Clone, PartialEq)]
 enum Cell {
