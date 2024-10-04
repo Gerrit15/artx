@@ -1,6 +1,21 @@
+use std::fmt;
+
 fn main() {
     let mut b = Board::new(4, 4);
+    (b.board[1][1], b.board[1][2], b.board[1][3]) = (Cell::ALIVE,Cell::ALIVE,Cell::ALIVE);
+    print!("{b}");
     b.board = b.update();
+    println!();
+    print!("{b}");
+    b.board = b.update();
+    println!();
+    print!("{b}");
+    b.board = b.update();
+    println!();
+    print!("{b}");
+    b.board = b.update();
+    println!();
+    print!("{b}");
 }
 
 struct Board {
