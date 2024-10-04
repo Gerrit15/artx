@@ -71,14 +71,14 @@ impl Cell {
         let k: u8 = kernel.iter().map(|c| {
             match c {
                 Some(cell) => {
-                    if **cell == Cell::ALIVE {1}
+                    if cell == &&Cell::ALIVE {1}
                     else {0}
                 },
                 None => 0
             }
         }).sum();
 
-        if *self == Cell::ALIVE {
+        if self == &Cell::ALIVE {
             if k > 2 {Cell::DEAD}
             else if k == 2 || k == 3 {Cell::ALIVE}
             else {Cell::DEAD}
