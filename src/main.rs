@@ -83,6 +83,23 @@ enum Cell {
     DEAD,
 }
 
+impl From<Cell> for String {
+    fn from(value: Cell) -> Self {
+        match value {
+            Cell::DEAD => "Dead",
+            Cell::ALIVE => "Alive"
+        }.to_owned()
+    }
+}
+impl From<&Cell> for String {
+    fn from(value: &Cell) -> Self {
+        match value {
+            &Cell::DEAD => "Dead",
+            &Cell::ALIVE => "Alive"
+        }.to_owned()
+    }
+}
+
 impl Cell {
     pub fn tick(&self, kernel: Vec<Option<&Cell>>) -> Cell {
         let k: u8 = kernel.iter().map(|c| {
