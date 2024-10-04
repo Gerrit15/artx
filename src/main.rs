@@ -22,23 +22,40 @@ impl Board {
         let mut new_board = vec![vec![Cell::DEAD; self.height]; self.width];
         for i in 0..self.width {
             for j in 0..self.height {
-                let mut kernel: Vec<Option<&Cell>> = vec![];
-                for u in (i as isize - 1) .. (i as isize + 1) {
-                    for v in (j as isize - 1) .. (j as isize + 1) {
-                        if u != v {kernel.push(self.get(i, j))}
-                    }
-                } 
-                new_board[i][j] = self.board[i][j].tick(kernel);
+                new_board[i][j] = self.board[i][j].tick(self.get_kernel(i, j));
             }
         }
         new_board
     }
 
-    fn get(&self, w: usize, h: usize) -> Option<&Cell> {
-        let c = self.board.get(w);
-        match c {
-            Some(c) => return c.get(h),
-            None => return None
+    fn get_kernel(&self, i: usize, j: usize) -> Vec<Option<&Cell>> {
+        let (i, j) = (i as isize, j as isize);
+        let mut kernel = vec![];
+        for u in 0..3 {
+            for v in 0..3 {
+                kernel.push(self.get_tile(i - 1 + u, j - 1 + v))
+            }
+        }
+        let mut found = false;
+        for n in 0..kernel.len() {
+            if !found {
+                if kernel[n] == self.get_tile(i, j) {kernel.remove(n); found = true}
+            }
+        }
+        kernel
+    }
+
+    fn get_tile(&self, w: isize, h: isize) -> Option<&Cell> {
+        if w < 0 || h < 0 || w >= self.width as isize || h  >= self.height as isize {
+            return None
+        } else {
+            let w: usize = w.try_into().unwrap();
+            let h: usize = h.try_into().unwrap();
+            let c = self.board.get(w);
+            match c {
+                Some(c) => return c.get(h),
+                None => return None
+            }
         }
     }
 }
