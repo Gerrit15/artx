@@ -1,22 +1,45 @@
 use std::fmt;
+use pixels::{Error, SurfaceTexture, Pixels};
+use winit::{event_loop::EventLoop, dpi::LogicalSize, window::WindowBuilder, event::WindowEvent};
+use winit_input_helper::WinitInputHelper;
 
-fn main() {
-    let mut b = Board::new(4, 4);
-    (b.board[1][1], b.board[1][2], b.board[1][3]) = (Cell::ALIVE,Cell::ALIVE,Cell::ALIVE);
-    print!("{b}");
-    b.board = b.update();
-    println!();
-    print!("{b}");
-    b.board = b.update();
-    println!();
-    print!("{b}");
-    b.board = b.update();
-    println!();
-    print!("{b}");
-    b.board = b.update();
-    println!();
-    print!("{b}");
-}
+fn main() -> Result<(), Error> {
+    let scale = (400, 300);
+    let mut b = Board::new(scale.0, scale.1);
+
+    let event_loop = EventLoop::new().unwrap();
+    let mut input = WinitInputHelper::new();
+
+
+    let window = {
+        let size = LogicalSize::new(scale.0 as f64, scale.1 as f64);
+        let scaled_size = LogicalSize::new(scale.0 as f64 * 3.0, scale.1 as f64 * 3.0);
+        WindowBuilder::new()
+            .with_title("Conway's Life")
+            .with_inner_size(scaled_size)
+            .with_min_inner_size(size)
+            .build(&event_loop)
+            .unwrap()
+    };
+
+    let mut pixels = {
+        let window_size = window.inner_size();
+        let surface_texture = SurfaceTexture::new(window_size.width, window_size.height, &window);
+        Pixels::new(scale.0.try_into().unwrap(), scale.1.try_into().unwrap(), surface_texture)?
+    };
+
+    let mut paused = false;
+    let mut draw_state: Option<bool> = None;
+    let res = event_loop.run(|event, elwt|{
+        if let Event::WindowEvent {
+            event: WindowEvent::RedrawRequested,
+            ..
+        } = event {
+        }
+    });
+
+    Ok(())
+    }
 
 struct Board {
     pub width: usize,
