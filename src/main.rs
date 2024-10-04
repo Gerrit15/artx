@@ -23,8 +23,8 @@ impl Board {
         for i in 0..self.width {
             for j in 0..self.height {
                 let mut kernel: Vec<Option<&Cell>> = vec![];
-                for u in (i - 1) .. (i + 1) {
-                    for v in (i - 1) .. (i + 1) {
+                for u in (i as isize - 1) .. (i as isize + 1) {
+                    for v in (j as isize - 1) .. (j as isize + 1) {
                         if u != v {kernel.push(self.get(i, j))}
                     }
                 } 
