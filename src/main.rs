@@ -1,10 +1,11 @@
 use std::fmt;
 use eframe::egui;
-use egui::{Key, ScrollArea};
+use egui::{Key, ScrollArea, Rounding, Color32, Stroke};
 
 fn main() -> eframe::Result {
-    let scale = (400, 300);
+    let scale = (45, 30);
     let mut b = Board::new(scale.0, scale.1);
+    println!("{}, {}", b.width, b.height);
     b.board = b.update();
 
     let options = eframe::NativeOptions {
@@ -26,7 +27,6 @@ struct Board {
     pub width: usize,
     pub height: usize,
     pub board: Vec<Vec<Cell>>,
-    pub test_string: String,
 }
 
 impl Board {
@@ -35,7 +35,6 @@ impl Board {
             width: w,
             height: h,
             board: vec![vec![Cell::DEAD; h];w],
-            test_string: "".to_string(),
         }
     }
 
@@ -148,29 +147,20 @@ impl eframe::App for Board {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("TEST TEST TEST A TO TEST");
-            /*if ui.button("Clear").clicked() {
-                self.test_string.clear();
+            let (w, h) = (self.width, self.height);
+            println!("{}, {}", w, h);
+            for i in 2..w {
+                for j in 2..h {
+                    ui.painter().rect(egui::Rect {
+                        min: egui::Pos2 { x: 11.0 * (i as f32), y: 11.0 * (j as f32) }, 
+                        //min: egui::Pos2 {x: 10.0, y: 10.0},
+                        max: egui::Pos2 { x: 21.0 * (i as f32),  y: 21.0 * (j as f32)} }, 
+                        //max: egui::Pos2 { x: 20.0, y: 20.0}},
+                        Rounding::default(), 
+                        Color32::BLUE, 
+                        Stroke::NONE);
+               }
             }
-            ScrollArea::vertical()
-                .auto_shrink(false)
-                .stick_to_bottom(true)
-                .show(ui, |ui| {
-                    ui.label(&self.test_string);
-                });
-            if ctx.input(|i| i.key_pressed(Key::A)) {
-                self.test_string.push_str("\nPressed");
-            }
-            if ctx.input(|i| i.key_down(Key::A)) {
-                self.test_string.push_str("\nHeld");
-            }
-            if ctx.input(|i| i.key_released(Key::A)) {
-                self.test_string.push_str("\nReleased");
-            }*/
-            let square = egui::Rect{
-                min: egui::pos2(20.0, 20.0),
-                max: egui::pos2(20.0, 20.0),
-            };
-            ui.painter().rect_filled(square, 0.0, egui::Color32::LIGHT_YELLOW);
         });
     }
 }
