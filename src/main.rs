@@ -1,50 +1,32 @@
 use std::fmt;
-use pixels::{Error, SurfaceTexture, Pixels};
-use winit::{event_loop::EventLoop, dpi::LogicalSize, window::WindowBuilder, event::WindowEvent};
-use winit_input_helper::WinitInputHelper;
+use eframe::egui;
+use egui::{Key, ScrollArea};
 
-fn main() -> Result<(), Error> {
+fn main() -> eframe::Result {
     let scale = (400, 300);
     let mut b = Board::new(scale.0, scale.1);
+    b.board = b.update();
 
-    let event_loop = EventLoop::new().unwrap();
-    let mut input = WinitInputHelper::new();
-
-
-    let window = {
-        let size = LogicalSize::new(scale.0 as f64, scale.1 as f64);
-        let scaled_size = LogicalSize::new(scale.0 as f64 * 3.0, scale.1 as f64 * 3.0);
-        WindowBuilder::new()
-            .with_title("Conway's Life")
-            .with_inner_size(scaled_size)
-            .with_min_inner_size(size)
-            .build(&event_loop)
-            .unwrap()
+    let options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default().with_inner_size([scale.0 as f32, scale.1 as f32]),
+        ..Default::default()
     };
+    
+    eframe::run_native(
+        "Conway's Game of Life",
+        options,
+        Box::new(|_cc|{
+            Ok(Box::<Board>::default())
+        })
+    )
+}
 
-    let mut pixels = {
-        let window_size = window.inner_size();
-        let surface_texture = SurfaceTexture::new(window_size.width, window_size.height, &window);
-        Pixels::new(scale.0.try_into().unwrap(), scale.1.try_into().unwrap(), surface_texture)?
-    };
-
-    let mut paused = false;
-    let mut draw_state: Option<bool> = None;
-    let res = event_loop.run(|event, elwt|{
-        if let Event::WindowEvent {
-            event: WindowEvent::RedrawRequested,
-            ..
-        } = event {
-        }
-    });
-
-    Ok(())
-    }
-
+#[derive(Default)]
 struct Board {
     pub width: usize,
     pub height: usize,
-    pub board: Vec<Vec<Cell>>
+    pub board: Vec<Vec<Cell>>,
+    pub test_string: String,
 }
 
 impl Board {
@@ -52,7 +34,8 @@ impl Board {
         Board {
             width: w,
             height: h,
-            board: vec![vec![Cell::DEAD; h];w]
+            board: vec![vec![Cell::DEAD; h];w],
+            test_string: "".to_string(),
         }
     }
 
@@ -158,5 +141,36 @@ impl Cell {
             if k == 3 {Cell::ALIVE}
             else {Cell::DEAD}
         }
+    }
+}
+
+impl eframe::App for Board {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::CentralPanel::default().show(ctx, |ui| {
+            ui.heading("TEST TEST TEST A TO TEST");
+            /*if ui.button("Clear").clicked() {
+                self.test_string.clear();
+            }
+            ScrollArea::vertical()
+                .auto_shrink(false)
+                .stick_to_bottom(true)
+                .show(ui, |ui| {
+                    ui.label(&self.test_string);
+                });
+            if ctx.input(|i| i.key_pressed(Key::A)) {
+                self.test_string.push_str("\nPressed");
+            }
+            if ctx.input(|i| i.key_down(Key::A)) {
+                self.test_string.push_str("\nHeld");
+            }
+            if ctx.input(|i| i.key_released(Key::A)) {
+                self.test_string.push_str("\nReleased");
+            }*/
+            let square = egui::Rect{
+                min: egui::pos2(20.0, 20.0),
+                max: egui::pos2(20.0, 20.0),
+            };
+            ui.painter().rect_filled(square, 0.0, egui::Color32::LIGHT_YELLOW);
+        });
     }
 }
