@@ -12,6 +12,9 @@ fn main() -> Result<()> {
         if i.2 == "g".to_string() {b.make_glider(i.0, i.1)}
         if i.2 == "p".to_string() {b.make_pulsar(i.0, i.1)}
         if i.2 == "c".to_string() {b.make_copperhead(i.0, i.1)}
+        if i.2 == "t".to_string() {b.make_tile(i.0, i.1)}
+        if i.2 == "lh".to_string() {b.make_line(i.0, i.1, false)}
+        if i.2 == "lv".to_string() {b.make_line(i.0, i.1, true)}
     }
 
     let mut stdout = stdout();
@@ -20,7 +23,6 @@ fn main() -> Result<()> {
         let _ = stdout.queue(cursor::MoveTo(0, 0));
         println!("{b}");
         b.board = b.update();
-        //stdin().read_line(&mut s).unwrap();
         thread::sleep(time::Duration::from_secs_f32(input.0));
 
     }
@@ -74,7 +76,7 @@ impl Board {
 
         loop {
             let mut vals = (0, 0, "".to_string());
-            let object_type = rl.readline(">>Type [g, p, c]: ");
+            let object_type = rl.readline(">>Type [g, p, c, t, lh, lv]: ");
             match object_type {
                 Ok(s) => vals.2 = s,
                 Err(rustyline::error::ReadlineError::Eof) => return (timestep, opts, xmax, ymax),
@@ -208,7 +210,22 @@ impl Board {
         self.board[3 + x][2 + y] = Cell::ALIVE;
         self.board[2 + x][2 + y] = Cell::ALIVE;
         self.board[1 + x][1 + y] = Cell::ALIVE;
+    }
 
+    pub fn make_tile(&mut self, x: usize, y: usize) {
+        self.board[x][y] = Cell::ALIVE;
+    }
+
+    pub fn make_line(&mut self, x: usize, y: usize, vert: bool) {
+        if vert {
+            self.board[x - 1][y] = Cell::ALIVE;
+            self.board[x][y] = Cell::ALIVE;
+            self.board[x + 1][y] = Cell::ALIVE;
+        } else {
+            self.board[x][y - 1] = Cell::ALIVE;
+            self.board[x][y] = Cell::ALIVE;
+            self.board[x][y + 1] = Cell::ALIVE;
+        }
     }
 
     pub fn update(&self) -> Vec<Vec<Cell>> {
