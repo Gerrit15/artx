@@ -1,25 +1,17 @@
 use std::fmt;
-use eframe::egui;
-use egui::{Key, ScrollArea, Rounding, Color32, Stroke};
+use std::io::stdin;
 
-fn main() -> eframe::Result {
-    let scale = (45, 30);
-    let mut b = Board::new(scale.0, scale.1);
-    println!("{}, {}", b.width, b.height);
-    b.board = b.update();
-
-    let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([scale.0 as f32, scale.1 as f32]),
-        ..Default::default()
-    };
-    
-    eframe::run_native(
-        "Conway's Game of Life",
-        options,
-        Box::new(|_cc|{
-            Ok(Box::<Board>::default())
-        })
-    )
+fn main() {
+    let mut b = Board::new();
+    b.board[3][4] = Cell::ALIVE;
+    b.board[3][5] = Cell::ALIVE;
+    b.board[3][6] = Cell::ALIVE;
+    let mut s = String::new();
+    loop {
+        println!("{b}");
+        b.board = b.update();
+        stdin().read_line(&mut s).unwrap();
+    }
 }
 
 #[derive(Default)]
@@ -30,11 +22,11 @@ struct Board {
 }
 
 impl Board {
-    pub fn new(w: usize, h: usize) -> Board {
+    pub fn new() -> Board {
         Board {
-            width: w,
-            height: h,
-            board: vec![vec![Cell::DEAD; h];w],
+            width: 10,
+            height: 10,
+            board: vec![vec![Cell::DEAD; 10];10],
         }
     }
 
@@ -140,27 +132,5 @@ impl Cell {
             if k == 3 {Cell::ALIVE}
             else {Cell::DEAD}
         }
-    }
-}
-
-impl eframe::App for Board {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("TEST TEST TEST A TO TEST");
-            let (w, h) = (self.width, self.height);
-            println!("{}, {}", w, h);
-            for i in 2..w {
-                for j in 2..h {
-                    ui.painter().rect(egui::Rect {
-                        min: egui::Pos2 { x: 11.0 * (i as f32), y: 11.0 * (j as f32) }, 
-                        //min: egui::Pos2 {x: 10.0, y: 10.0},
-                        max: egui::Pos2 { x: 21.0 * (i as f32),  y: 21.0 * (j as f32)} }, 
-                        //max: egui::Pos2 { x: 20.0, y: 20.0}},
-                        Rounding::default(), 
-                        Color32::BLUE, 
-                        Stroke::NONE);
-               }
-            }
-        });
     }
 }
