@@ -2,19 +2,22 @@ use std::fmt;
 use std::{thread, time};
 use std::io::{stdout, Write};
 use crossterm::{QueueableCommand, cursor};
+use rand::Rng;
 use rustyline::{DefaultEditor, Result};
 
 fn main() -> Result<()> {
     let input = Board::get_input();
-    let mut b = Board::new(input.2, input.3);
+    let mut b = Board::new(input.3, input.2);
 
     for i in input.1 {
-        if i.2 == "g".to_string() {b.make_glider(i.0, i.1)}
-        if i.2 == "p".to_string() {b.make_pulsar(i.0, i.1)}
-        if i.2 == "c".to_string() {b.make_copperhead(i.0, i.1)}
-        if i.2 == "t".to_string() {b.make_tile(i.0, i.1)}
-        if i.2 == "lh".to_string() {b.make_line(i.0, i.1, false)}
-        if i.2 == "lv".to_string() {b.make_line(i.0, i.1, true)}
+        if i.2 == "g".to_string() {b.make_glider(i.1, i.0)}
+        if i.2 == "p".to_string() {b.make_pulsar(i.1, i.0)}
+        if i.2 == "c".to_string() {b.make_copperhead(i.1, i.0)}
+        if i.2 == "t".to_string() {b.make_tile(i.1, i.0)}
+        if i.2 == "lh".to_string() {b.make_line(i.1, i.0, false)}
+        if i.2 == "lv".to_string() {b.make_line(i.1, i.0, true)}
+        if i.2 == "b".to_string() {b.make_bottle(i.1, i.0)}
+        if i.2 == "r".to_string() {b.rand()}
     }
 
     let mut stdout = stdout();
@@ -76,7 +79,7 @@ impl Board {
 
         loop {
             let mut vals = (0, 0, "".to_string());
-            let object_type = rl.readline(">>Type [g, p, c, t, lh, lv]: ");
+            let object_type = rl.readline(">>Type [g, p, c, t, lh, lv, b, r]: ");
             match object_type {
                 Ok(s) => vals.2 = s,
                 Err(rustyline::error::ReadlineError::Eof) => return (timestep, opts, xmax, ymax),
@@ -225,6 +228,121 @@ impl Board {
             self.board[x][y - 1] = Cell::ALIVE;
             self.board[x][y] = Cell::ALIVE;
             self.board[x][y + 1] = Cell::ALIVE;
+        }
+    }
+
+    pub fn make_bottle(&mut self, x: usize, y: usize) {
+        self.board[x + 4][y + 0] = Cell::ALIVE;
+        self.board[x + 5][y + 0] = Cell::ALIVE;
+        self.board[x + 5][y + 0] = Cell::ALIVE;
+        self.board[x + 12][y + 0] = Cell::ALIVE;
+        self.board[x + 13][y + 0] = Cell::ALIVE;
+
+        self.board[x + 3][y + 1] = Cell::ALIVE;
+        self.board[x + 6][y + 1] = Cell::ALIVE;
+        self.board[x + 11][y + 1] = Cell::ALIVE;
+        self.board[x + 14][y + 1] = Cell::ALIVE;
+
+        self.board[x + 3][y + 2] = Cell::ALIVE;
+        self.board[x + 5][y + 2] = Cell::ALIVE;
+        self.board[x + 12][y + 2] = Cell::ALIVE;
+        self.board[x + 14][y + 2] = Cell::ALIVE;
+
+        self.board[x + 1][y + 3] = Cell::ALIVE;
+        self.board[x + 2][y + 3] = Cell::ALIVE;
+        self.board[x + 5][y + 3] = Cell::ALIVE;
+        self.board[x + 6][y + 3] = Cell::ALIVE;
+        self.board[x + 7][y + 3] = Cell::ALIVE;
+        self.board[x + 10][y + 3] = Cell::ALIVE;
+        self.board[x + 11][y + 3] = Cell::ALIVE;
+        self.board[x + 12][y + 3] = Cell::ALIVE;
+//        self.board[x + 13][y + 3] = Cell::ALIVE;
+        self.board[x + 15][y + 3] = Cell::ALIVE;
+        self.board[x + 16][y + 3] = Cell::ALIVE;
+
+        self.board[x + 0][y + 4] = Cell::ALIVE;
+        self.board[x + 7][y + 4] = Cell::ALIVE;
+        self.board[x + 10][y + 4] = Cell::ALIVE;
+        self.board[x + 17][y + 4] = Cell::ALIVE;
+
+        self.board[x + 0][y + 5] = Cell::ALIVE;
+        self.board[x + 2][y + 5] = Cell::ALIVE;
+        self.board[x + 3][y + 5] = Cell::ALIVE;
+        self.board[x + 14][y + 5] = Cell::ALIVE;
+        self.board[x + 15][y + 5] = Cell::ALIVE;
+        self.board[x + 17][y + 5] = Cell::ALIVE;
+
+        self.board[x + 1][y + 6] = Cell::ALIVE;
+        self.board[x + 3][y + 6] = Cell::ALIVE;
+        self.board[x + 14][y + 6] = Cell::ALIVE;
+        self.board[x + 16][y + 6] = Cell::ALIVE;
+
+        self.board[x + 3][y + 7] = Cell::ALIVE;
+        self.board[x + 4][y + 7] = Cell::ALIVE;
+        self.board[x + 13][y + 7] = Cell::ALIVE;
+        self.board[x + 14][y + 7] = Cell::ALIVE;
+
+        ///////
+
+        self.board[x + 3][y + 10] = Cell::ALIVE;
+        self.board[x + 4][y + 10] = Cell::ALIVE;
+        self.board[x + 13][y + 10] = Cell::ALIVE;
+        self.board[x + 14][y + 10] = Cell::ALIVE;
+
+        self.board[x + 1][y + 11] = Cell::ALIVE;
+        self.board[x + 3][y + 11] = Cell::ALIVE;
+        self.board[x + 14][y + 11] = Cell::ALIVE;
+        self.board[x + 16][y + 11] = Cell::ALIVE;
+
+        self.board[x + 0][y + 12] = Cell::ALIVE;
+        self.board[x + 2][y + 12] = Cell::ALIVE;
+        self.board[x + 3][y + 12] = Cell::ALIVE;
+        self.board[x + 14][y + 12] = Cell::ALIVE;
+        self.board[x + 15][y + 12] = Cell::ALIVE;
+        self.board[x + 17][y + 12] = Cell::ALIVE;
+
+        self.board[x + 0][y + 13] = Cell::ALIVE;
+        self.board[x + 7][y + 13] = Cell::ALIVE;
+        self.board[x + 10][y + 13] = Cell::ALIVE;
+        self.board[x + 17][y + 13] = Cell::ALIVE;
+
+        self.board[x + 1][y + 14] = Cell::ALIVE;
+        self.board[x + 2][y + 14] = Cell::ALIVE;
+        self.board[x + 5][y + 14] = Cell::ALIVE;
+        self.board[x + 6][y + 14] = Cell::ALIVE;
+        self.board[x + 7][y + 14] = Cell::ALIVE;
+        self.board[x + 10][y + 14] = Cell::ALIVE;
+        self.board[x + 11][y + 14] = Cell::ALIVE;
+        self.board[x + 12][y + 14] = Cell::ALIVE;
+ //       self.board[x + 13][y + 14] = Cell::ALIVE;
+        self.board[x + 15][y + 14] = Cell::ALIVE;
+        self.board[x + 16][y + 14] = Cell::ALIVE;
+
+        self.board[x + 3][y + 15] = Cell::ALIVE;
+        self.board[x + 5][y + 15] = Cell::ALIVE;
+        self.board[x + 12][y + 15] = Cell::ALIVE;
+        self.board[x + 14][y + 15] = Cell::ALIVE;
+
+        self.board[x + 3][y + 16] = Cell::ALIVE;
+        self.board[x + 6][y + 16] = Cell::ALIVE;
+        self.board[x + 11][y + 16] = Cell::ALIVE;
+        self.board[x + 14][y + 16] = Cell::ALIVE;
+
+        self.board[x + 4][y + 17] = Cell::ALIVE;
+        self.board[x + 5][y + 17] = Cell::ALIVE;
+        self.board[x + 5][y + 17] = Cell::ALIVE;
+        self.board[x + 12][y + 17] = Cell::ALIVE;
+        self.board[x + 13][y + 17] = Cell::ALIVE;
+
+    }
+
+    pub fn rand(&mut self) {
+        for i in 0..self.width {
+            for j in 0..self.height {
+                let num = rand::thread_rng().gen_bool(0.5);
+                if num {self.board[i][j] = Cell::ALIVE}
+                else {self.board[i][j] = Cell::DEAD}
+            }
         }
     }
 
